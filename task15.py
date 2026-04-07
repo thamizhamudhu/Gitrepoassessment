@@ -35,19 +35,19 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+PG_CONN = os.getenv("PG_CONNECTION_STRING")
+
 def rag_with_sources(documents: list, question: str) -> dict:
     """Returns the answer AND the source documents used."""
     docs = [Document(page_content=d) for d in documents]
 
     embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
 
-    connection_string = "postgresql+psycopg://postgres:Pass%40123@localhost:5432/vectordb"
-
     vectorstore = PGVector.from_documents(
         documents=docs,
         embedding=embeddings,
         collection_name="rag_sources_collection",
-        connection_string=connection_string
+        connection_string=PG_CONN
     )
 
     retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
